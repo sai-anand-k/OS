@@ -10,7 +10,7 @@ int main(int argc , char *argv[])
     char *b = (char*)calloc(100,sizeof(char));
     int size;
     int fd = open(argv[1],O_RDONLY);
-    int dest = open(argv[2],O_WRONLY | O_CREAT);
+    int dest = open(argv[2],O_RDWR | O_CREAT);
     printf("fd = %d\n", fd);
 
     if (fd == -1) {
@@ -24,18 +24,22 @@ int main(int argc , char *argv[])
         read(fd,&c,1);
         write(dest,&c,1);
     }
-    close(dest); // Close the destination file
+    //close(dest); // Close the destination file
 
     // Reopen the destination file for reading
-    dest = open(argv[2], O_RDONLY);
-    if (dest == -1) {
-        printf("Error opening destination file ");
-        return 1; // Exit with error
-    }
-
+    //dest = open(argv[2], O_RDONLY);
+    //if (dest == -1) {
+        //printf("Error opening destination file ");
+        //return 1; // Exit with error
+    //}
+    lseek(dest,0,SEEK_SET);
     // Read from the destination file into buffer 'b'
     size = read(dest, b, 100);
     
+    if (size == -1) {
+    perror("Error reading from file");
+    return 1;
+}
     // Null-terminate the string
     b[size] = '\0';
     
